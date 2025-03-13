@@ -12,11 +12,11 @@ export default function WaitingRoom() {
 
   useEffect(() => {
     if (!player) return;
-
+  
     const playerRef = ref(database, `waitingRoom/${player}`);
     set(playerRef, { name: player, ready: false });
     onDisconnect(playerRef).remove();
-
+  
     const waitingRoomRef = ref(database, "waitingRoom");
     const unsubscribe = onValue(waitingRoomRef, (snapshot) => {
       const data = snapshot.val();
@@ -24,19 +24,20 @@ export default function WaitingRoom() {
         setPlayers(Object.values(data));
       }
     });
-
+  
     const gameStateRef = ref(database, "gameState");
     const unsubscribeGame = onValue(gameStateRef, (snapshot) => {
       if (snapshot.val()?.started) {
-        router.push(`/quiz/${player}`); // 🔥 Redirects to player-specific quiz
+        router.push(`/quiz/${player}`);
       }
     });
-
+  
     return () => {
       unsubscribe();
       unsubscribeGame();
     };
-  }, [player]);
+  }, [player, router]);
+  
 
   const markReady = () => {
     if (!player) return;
@@ -50,7 +51,7 @@ export default function WaitingRoom() {
       <Container> {/* ✅ Wrap content inside the styled box */}
         <h1 className="text-3xl font-bold text-indigo-700">Waiting Room</h1>
         <p className="text-lg mt-2 text-gray-700">
-          Welcome, {player}! Waiting for the host to start the game...
+          Welcome, {player}! Waiting for the host to start the game&hellip;
         </p>
 
         <h2 className="text-xl font-semibold mt-4">Players Joined:</h2>

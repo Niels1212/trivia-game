@@ -33,7 +33,7 @@ export default function Home() {
           onClick={startQuiz}
           className="mt-6 px-6 py-3 text-lg font-semibold bg-indigo-600 hover:bg-indigo-800 text-white rounded-lg shadow-md transition duration-300 w-full"
         >
-          Join Alex's Trivia
+          Join Alex&apos;s Trivia
         </button>
       </Container>
     </div>
