@@ -11,7 +11,9 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   };
 
-// Initialize Firebase
+// 🔥 Debugging: Check if Vercel is loading environment variables
+console.log("FIREBASE CONFIG:", firebaseConfig);
+
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
