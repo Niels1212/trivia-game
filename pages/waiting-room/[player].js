@@ -37,7 +37,7 @@ export default function WaitingRoom() {
       unsubscribeGame();
     };
   }, [player, router]);
-  
+
 
   const markReady = () => {
     if (!player) return;
@@ -68,7 +68,7 @@ export default function WaitingRoom() {
             onClick={markReady}
             className="mt-6 px-6 py-3 text-lg font-semibold bg-green-600 hover:bg-green-800 text-white rounded-lg shadow-md transition duration-300 w-full"
           >
-            I'm Ready! ✅
+            I&apos;m Ready! ✅
           </button>
         )}
       </Container>
