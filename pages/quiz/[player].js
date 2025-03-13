@@ -1,57 +1,60 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { database } from "../../firebaseConfig";
-import { ref, get, update } from "firebase/database";
+import { ref, get, update, onValue } from "firebase/database";
 import questions from "../../data/questions.json";
 import Container from "../../components/Container";
-import ImageQuestion from "../../components/ImageQuestion"; 
-import AnimatedAnswerButton from "../../components/AnimatedAnswerButton"; 
+import ImageQuestion from "../../components/ImageQuestion";
+import AnimatedAnswerButton from "../../components/AnimatedAnswerButton";
+import SubmitButton from "../../components/SubmitButton"; // ✅ New Component
 
 export default function Quiz() {
   const router = useRouter();
   const { player } = router.query;
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [isAnswered, setIsAnswered] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [score, setScore] = useState(0);
 
   useEffect(() => {
     if (!player) return;
+
+    const questionRef = ref(database, "currentQuestion");
+    onValue(questionRef, (snapshot) => {
+      const newQuestion = snapshot.val()?.value;
+      
+      if (newQuestion !== null && typeof newQuestion !== "undefined") {
+        setCurrentQuestion(newQuestion);
+        setSelectedAnswer(null); // Reset selection
+        setIsSubmitted(false);   // Allow new answer selection
+      }
+    });
   }, [player]);
 
-  const handleAnswer = (selectedOption) => {
-    setIsAnswered(true);
+  const handleSelectAnswer = (option) => {
+    if (!isSubmitted) {
+      setSelectedAnswer(option);
+    }
+  };
 
-    // Check if the selected answer is correct
-    const isCorrect = selectedOption === questions[currentQuestion].answer;
+  const handleSubmit = () => {
+    if (!selectedAnswer) return; // Ensure answer is selected
+    setIsSubmitted(true); // Lock in answer
+
+    const isCorrect = questions[currentQuestion] && selectedAnswer === questions[currentQuestion].answer;
     if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
     }
 
-    setTimeout(() => {
-      setIsAnswered(false);
+    // Update Firebase with submission status
+    if (player) {
+      const playerScoreRef = ref(database, `scores/${player}`);
+      update(playerScoreRef, { score: isCorrect ? score + 1 : score });
 
-      if (currentQuestion + 1 < questions.length) {
-        setCurrentQuestion(currentQuestion + 1);
-      } else {
-        // Game finished - Save final score to Firebase
-        if (player) {
-          const finalScore = isCorrect ? score + 1 : score; // Capture correct score before updating
-          const playerScoreRef = ref(database, `scores/${player}`);
-
-          update(playerScoreRef, { score: finalScore }) 
-            .then(() => {
-              const finishedRef = ref(database, "finishedCount");
-              get(finishedRef).then((snapshot) => {
-                let finishedCount = snapshot.val()?.count || 0;
-                update(finishedRef, { count: finishedCount + 1 }).then(() => {
-                  setShowThankYou(true);
-                });
-              });
-            });
-        }
-      }
-    }, 1000);
+      const submittedRef = ref(database, `submissions/${player}`);
+      update(submittedRef, { submitted: true }); // ✅ Track submission
+    }
   };
 
   return (
@@ -67,34 +70,47 @@ export default function Quiz() {
 
             <button
               onClick={() => router.push("/")}
-              className="mt-6 px-6 py-3 text-lg font-semibold bg-indigo-600 hover:bg-indigo-800 text-white rounded-lg shadow-md transition duration-300"
+              className="mt-6 px-6 py-3 text-lg font-semibold bg-indigo-600 text-white rounded-lg shadow-md transition duration-300"
             >
               🏠 Go Home
             </button>
           </div>
         ) : (
           <div>
-            {/* ✅ Display Image for the Question */}
-            {questions[currentQuestion].image && (
+            {questions[currentQuestion] && questions[currentQuestion].image && (
               <ImageQuestion
                 imageSrc={questions[currentQuestion].image}
                 altText={questions[currentQuestion].question}
               />
             )}
 
-            {/* ✅ Display Question Text */}
-            <h2 className="text-2xl font-semibold mt-4">{questions[currentQuestion].question}</h2>
+            {questions[currentQuestion] && (
+              <>
+                <h2 className="text-2xl font-semibold mt-4">{questions[currentQuestion].question}</h2>
 
-            {/* ✅ Display Answer Options with Animated Buttons */}
-            <div className="mt-4 space-y-3">
-              {questions[currentQuestion].options.map((option, index) => (
-                <AnimatedAnswerButton
-                  key={index}
-                  text={option}
-                  onClick={() => handleAnswer(option)} // ✅ Pass selected answer
-                />
-              ))}
-            </div>
+                <div className="mt-4 space-y-3">
+                  {questions[currentQuestion].options.map((option, index) => (
+                    <AnimatedAnswerButton
+                      key={index}
+                      text={option}
+                      onClick={() => handleSelectAnswer(option)}
+                      isSelected={selectedAnswer === option} // Highlight selected
+                      disabled={isSubmitted} // Disable after submission
+                      className={
+                        selectedAnswer === option
+                          ? "bg-green-500 text-white border-2 border-green-700" // ✅ Visual feedback
+                          : "bg-gray-200"
+                      }
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Submit Button - Only show if an answer is selected and not submitted */}
+            {!isSubmitted && selectedAnswer && (
+              <SubmitButton onClick={handleSubmit} />
+            )}
           </div>
         )}
       </Container>

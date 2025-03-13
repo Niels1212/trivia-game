@@ -1,0 +1,18 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyC-uBoPa1yqROIKMDxY32BomWpwqbe1hLg",
+  authDomain: "trivia-game-b76bb.firebaseapp.com",
+  databaseURL: "https://trivia-game-b76bb-default-rtdb.firebaseio.com",
+  projectId: "trivia-game-b76bb",
+  storageBucket: "trivia-game-b76bb.firebasestorage.app",
+  messagingSenderId: "892596929497",
+  appId: "1:892596929497:web:d61d7fb9f5e0d0f74d0fc8"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
