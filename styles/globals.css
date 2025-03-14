@@ -1,6 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;600&display=swap');
 
 :root {
   --background: #ffffff;
@@ -10,8 +9,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Comfortaa', sans-serif;
+  --font-mono: monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +21,5 @@
 }
 
 body {
-  @apply bg-gradient-to-b from-purple-500 to-indigo-800 text-white font-[Poppins] min-h-screen flex items-center justify-center;
+  @apply bg-gradient-to-b from-purple-500 to-indigo-800 text-white font-sans min-h-screen flex items-center justify-center;
 }

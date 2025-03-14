@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Container from "../components/Container";
 import Button from "../components/Button";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
@@ -23,8 +25,42 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center">
       <Container>
-        <h1 className="text-4xl font-bold text-indigo-700">🎉 Welcome to Alex Trivia! 🎉</h1>
-        <p className="text-lg mt-2 text-gray-700">Enter your name to begin</p>
+        {/* Animated Image: Removed extra square container so that the image
+            now sits directly on the Container's background */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-4 flex justify-center items-center" // Centers the image
+        >
+          <Image
+            src="/images/index.png"
+            alt="Trivia Logo"
+            width={300}
+            height={300}
+            className="mx-auto" // Centers the image within its container
+          />
+        </motion.div>
+
+        {/* Animated Title */}
+        <motion.h1
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-4xl font-bold text-indigo-700"
+        >
+          🎉 Welcome to Alex Trivia! 🎉
+        </motion.h1>
+
+        {/* Enhanced Subheading */}
+        <motion.p
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-lg mt-2 text-purple-700 font-bold drop-shadow"
+        >
+          Enter your name to begin
+        </motion.p>
 
         <input
           type="text"
