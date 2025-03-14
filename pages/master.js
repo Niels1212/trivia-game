@@ -1,7 +1,10 @@
+// pages/master.js
 import { useState, useEffect } from "react";
 import { database } from "../firebaseConfig";
 import { ref, onValue, remove, update, get } from "firebase/database";
 import Container from "../components/Container";
+import Button from "../components/Button"; // Reusable button component
+import questions from "../data/questions.json"; // Import questions to know total count
 
 export default function MasterControl() {
   const [players, setPlayers] = useState([]);
@@ -11,13 +14,15 @@ export default function MasterControl() {
   const [allSubmitted, setAllSubmitted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
+  // Removed auto update effect that set gameState/showResults to true
+
+  // Listen for players in waiting room
   useEffect(() => {
-    // Track players in the game
     const waitingRoomRef = ref(database, "waitingRoom");
-    onValue(waitingRoomRef, (snapshot) => {
+    const unsubscribeWaitingRoom = onValue(waitingRoomRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const playerList = Object.keys(data);
+        const playerList = Object.values(data); // Getting player objects
         setPlayers(playerList);
         setTotalPlayers(playerList.length);
       } else {
@@ -25,16 +30,26 @@ export default function MasterControl() {
         setTotalPlayers(0);
       }
     });
+    return () => {
+      unsubscribeWaitingRoom();
+    };
+  }, []);
 
-    // Track finished players
+  // Listen for finished players count
+  useEffect(() => {
     const finishedRef = ref(database, "finishedCount");
-    onValue(finishedRef, (snapshot) => {
+    const unsubscribeFinished = onValue(finishedRef, (snapshot) => {
       setPlayersFinished(snapshot.val()?.count || 0);
     });
+    return () => {
+      unsubscribeFinished();
+    };
+  }, []);
 
-    // Track submissions
+  // Listen for submissions count
+  useEffect(() => {
     const submissionsRef = ref(database, "submissions");
-    onValue(submissionsRef, (snapshot) => {
+    const unsubscribeSubmissions = onValue(submissionsRef, (snapshot) => {
       const submissions = snapshot.val();
       if (submissions) {
         const submittedPlayers = Object.keys(submissions).length;
@@ -43,18 +58,57 @@ export default function MasterControl() {
         setAllSubmitted(false);
       }
     });
+    return () => {
+      unsubscribeSubmissions();
+    };
+  }, [totalPlayers]);
 
-    // Track current question
+  // Listen for current question updates
+  useEffect(() => {
     const questionRef = ref(database, "currentQuestion");
-    onValue(questionRef, (snapshot) => {
+    const unsubscribeQuestion = onValue(questionRef, (snapshot) => {
       setCurrentQuestion(snapshot.val()?.value || 0);
     });
-  }, [totalPlayers]);
+    return () => {
+      unsubscribeQuestion();
+    };
+  }, []);
+
+  // Button actions
+  const resetGame = () => {
+    remove(ref(database, "scores"));
+    remove(ref(database, "waitingRoom"));
+    remove(ref(database, "finishedCount"));
+    remove(ref(database, "submissions"));
+    update(ref(database, "gameState"), { started: false, showResults: false });
+    update(ref(database, "currentQuestion"), { value: 0 });
+    setGameStarted(false);
+    setTotalPlayers(0);
+  };
+
+  const startGame = () => {
+    if (players.length === 0 || !players.every((p) => p.ready)) return;
+    remove(ref(database, "waitingRoom"));
+    update(ref(database, "gameState"), { started: true });
+    update(ref(database, "currentQuestion"), { value: 0 });
+    setTotalPlayers(players.length);
+    setGameStarted(true);
+  };
 
   const nextQuestion = () => {
     update(ref(database, "currentQuestion"), { value: currentQuestion + 1 });
     remove(ref(database, "submissions")); // Reset submissions for the next question
     setAllSubmitted(false);
+  };
+
+  const showResults = () => {
+    // Update gameState/showResults only when button is pressed
+    update(ref(database, "gameState"), { showResults: true });
+    get(ref(database, "scores")).then((snapshot) => {
+      if (!snapshot.exists()) {
+        alert("No scores found! Make sure all players finish before showing results.");
+      }
+    });
   };
 
   return (
@@ -66,7 +120,7 @@ export default function MasterControl() {
         <ul className="mt-2 text-lg">
           {players.map((player, index) => (
             <li key={index} className="text-gray-800">
-              {player} ✅
+              {player.name} {player.ready ? "✅" : ""}
             </li>
           ))}
         </ul>
@@ -74,73 +128,33 @@ export default function MasterControl() {
         <h2 className="text-xl font-semibold mt-4">Players Finished: {playersFinished}</h2>
 
         <div className="mt-6 space-y-3">
-          {/* Reset Game Button */}
-          <button
-            onClick={() => {
-              remove(ref(database, "scores"));
-              remove(ref(database, "waitingRoom"));
-              remove(ref(database, "finishedCount"));
-              remove(ref(database, "submissions"));
-              update(ref(database, "gameState"), { started: false, showResults: false });
-              update(ref(database, "currentQuestion"), { value: 0 });
-              setGameStarted(false);
-              setTotalPlayers(0);
-            }}
-            className="px-6 py-3 text-lg font-semibold bg-red-600 text-white rounded-lg shadow-md transition duration-300 w-full"
-          >
+          <Button onClick={resetGame} variant="danger">
             Reset Game 🔄
-          </button>
+          </Button>
 
-          {/* Start Game Button */}
-          <button
-            onClick={() => {
-              if (players.length === 0 || !players.every((p) => p.ready)) return;
-              remove(ref(database, "waitingRoom"));
-              update(ref(database, "gameState"), { started: true });
-              update(ref(database, "currentQuestion"), { value: 0 });
-              setTotalPlayers(players.length);
-              setGameStarted(true);
-            }}
-            className={`px-6 py-3 text-lg font-semibold rounded-lg shadow-md transition duration-300 w-full ${
-              players.length > 0 && players.every((p) => p.ready)
-                ? "bg-green-600 text-white"
-                : "bg-gray-400 text-gray-800 cursor-not-allowed"
-            }`}
+          <Button
+            onClick={startGame}
+            variant="success"
             disabled={players.length === 0 || !players.every((p) => p.ready)}
           >
             Start Game 🚀
-          </button>
+          </Button>
 
-          {/* Next Question Button */}
-          <button
+          <Button
             onClick={nextQuestion}
-            className={`px-6 py-3 text-lg font-semibold rounded-lg shadow-md transition duration-300 w-full ${
-              allSubmitted ? "bg-orange-600 text-white" : "bg-gray-400 text-gray-800 cursor-not-allowed"
-            }`}
-            disabled={!allSubmitted}
+            variant="warning"
+            disabled={!allSubmitted || currentQuestion >= questions.length - 1} // Disabled on last question
           >
             Next Question ➡️
-          </button>
+          </Button>
 
-          {/* Show Results Button */}
-          <button
-            onClick={() => {
-              update(ref(database, "gameState"), { showResults: true });
-              get(ref(database, "scores")).then((snapshot) => {
-                if (!snapshot.exists()) {
-                  alert("No scores found! Make sure all players finish before showing results.");
-                }
-              });
-            }}
-            className={`px-6 py-3 text-lg font-semibold rounded-lg shadow-md transition duration-300 w-full ${
-              playersFinished === totalPlayers && totalPlayers > 0
-                ? "bg-blue-600 text-white"
-                : "bg-gray-400 text-gray-800 cursor-not-allowed"
-            }`}
+          <Button
+            onClick={showResults}
+            variant="primary"
             disabled={playersFinished !== totalPlayers || totalPlayers === 0}
           >
             Show Results 🏆
-          </button>
+          </Button>
         </div>
       </Container>
     </div>

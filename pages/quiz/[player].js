@@ -1,3 +1,4 @@
+// pages/quiz/[Player].js
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { database } from "../../firebaseConfig";
@@ -38,11 +39,12 @@ export default function Quiz() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedAnswer) return; // Ensure answer is selected
     setIsSubmitted(true); // Lock in answer
 
-    const isCorrect = questions[currentQuestion] && selectedAnswer === questions[currentQuestion].answer;
+    const isCorrect =
+      questions[currentQuestion] && selectedAnswer === questions[currentQuestion].answer;
     if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
     }
@@ -53,7 +55,17 @@ export default function Quiz() {
       update(playerScoreRef, { score: isCorrect ? score + 1 : score });
 
       const submittedRef = ref(database, `submissions/${player}`);
-      update(submittedRef, { submitted: true }); // ✅ Track submission
+      update(submittedRef, { submitted: true });
+    }
+
+    // Check if this is the last question
+    if (currentQuestion >= questions.length - 1) {
+      setShowThankYou(true);
+      // Update finishedCount in Firebase
+      const finishedCountRef = ref(database, "finishedCount");
+      const snapshot = await get(finishedCountRef);
+      const currentCount = snapshot.val()?.count || 0;
+      update(finishedCountRef, { count: currentCount + 1 });
     }
   };
 
@@ -64,7 +76,9 @@ export default function Quiz() {
 
         {showThankYou ? (
           <div>
-            <h1 className="text-3xl font-extrabold text-purple-600">Thank You for Playing! 🎉</h1>
+            <h1 className="text-3xl font-extrabold text-purple-600">
+              Thank You for Playing! 🎉
+            </h1>
             <p className="text-lg mt-2">Your answers have been submitted.</p>
             <p>Please wait for the results!</p>
 
@@ -77,16 +91,19 @@ export default function Quiz() {
           </div>
         ) : (
           <div>
-            {questions[currentQuestion] && questions[currentQuestion].image && (
-              <ImageQuestion
-                imageSrc={questions[currentQuestion].image}
-                altText={questions[currentQuestion].question}
-              />
-            )}
+            {questions[currentQuestion] &&
+              questions[currentQuestion].image && (
+                <ImageQuestion
+                  imageSrc={questions[currentQuestion].image}
+                  altText={questions[currentQuestion].question}
+                />
+              )}
 
             {questions[currentQuestion] && (
               <>
-                <h2 className="text-2xl font-semibold mt-4">{questions[currentQuestion].question}</h2>
+                <h2 className="text-2xl font-semibold mt-4">
+                  {questions[currentQuestion].question}
+                </h2>
 
                 <div className="mt-4 space-y-3">
                   {questions[currentQuestion].options.map((option, index) => (
@@ -94,11 +111,11 @@ export default function Quiz() {
                       key={index}
                       text={option}
                       onClick={() => handleSelectAnswer(option)}
-                      isSelected={selectedAnswer === option} // Highlight selected
-                      disabled={isSubmitted} // Disable after submission
+                      isSelected={selectedAnswer === option}
+                      disabled={isSubmitted}
                       className={
                         selectedAnswer === option
-                          ? "bg-green-500 text-white border-2 border-green-700" // ✅ Visual feedback
+                          ? "bg-green-500 text-white border-2 border-green-700"
                           : "bg-gray-200"
                       }
                     />

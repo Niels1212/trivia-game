@@ -1,18 +1,23 @@
+// pages/index.js
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Container from "../components/Container";
+import Button from "../components/Button";
 
 export default function Home() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [error, setError] = useState(""); // State for error messages
 
   const startQuiz = () => {
     if (name.trim() === "") {
-      alert("Please enter your name to start!");
+      setError("Please enter your name to start!");
       return;
     }
-    localStorage.setItem("playerName", name);
-    router.push(`/waiting-room/${name}`); // 🔥 Redirect to player-specific waiting room
+    setError(""); // Clear previous errors
+
+    // Redirect to the waiting room with the player's name in the URL.
+    router.push(`/waiting-room/${encodeURIComponent(name)}`);
   };
 
   return (
@@ -29,12 +34,12 @@ export default function Home() {
           className="mt-4 p-3 w-full border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
-        <button
-          onClick={startQuiz}
-          className="mt-6 px-6 py-3 text-lg font-semibold bg-indigo-600 hover:bg-indigo-800 text-white rounded-lg shadow-md transition duration-300 w-full"
-        >
+        {/* Display error if present */}
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+
+        <Button onClick={startQuiz} variant="primary">
           Join Alex&apos;s Trivia
-        </button>
+        </Button>
       </Container>
     </div>
   );
