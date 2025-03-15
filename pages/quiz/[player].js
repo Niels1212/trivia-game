@@ -1,4 +1,3 @@
-// pages/quiz/[Player].js
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { database } from "../../firebaseConfig";
@@ -6,8 +5,9 @@ import { ref, get, update, onValue } from "firebase/database";
 import questions from "../../data/questions.json";
 import Container from "../../components/Container";
 import ImageQuestion from "../../components/ImageQuestion";
-import AnimatedAnswerButton from "../../components/AnimatedAnswerButton";
-import SubmitButton from "../../components/SubmitButton"; // ✅ New Component
+import Button from "../../components/Button";
+import SubmitButton from "../../components/SubmitButton";
+import { motion } from "framer-motion";
 
 export default function Quiz() {
   const router = useRouter();
@@ -24,7 +24,6 @@ export default function Quiz() {
     const questionRef = ref(database, "currentQuestion");
     onValue(questionRef, (snapshot) => {
       const newQuestion = snapshot.val()?.value;
-      
       if (newQuestion !== null && typeof newQuestion !== "undefined") {
         setCurrentQuestion(newQuestion);
         setSelectedAnswer(null); // Reset selection
@@ -40,28 +39,30 @@ export default function Quiz() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedAnswer) return; // Ensure answer is selected
-    setIsSubmitted(true); // Lock in answer
-
+    if (!selectedAnswer) return;
+    setIsSubmitted(true);
+  
     const isCorrect =
-      questions[currentQuestion] && selectedAnswer === questions[currentQuestion].answer;
-    if (isCorrect) {
-      setScore((prevScore) => prevScore + 1);
-    }
-
-    // Update Firebase with submission status
+      questions[currentQuestion] &&
+      selectedAnswer === questions[currentQuestion].answer;
+  
     if (player) {
       const playerScoreRef = ref(database, `scores/${player}`);
-      update(playerScoreRef, { score: isCorrect ? score + 1 : score });
-
+      const snapshot = await get(playerScoreRef);
+      let currentFirebaseScore = snapshot.val()?.score || 0; // Get score from Firebase
+  
+      if (isCorrect) {
+        currentFirebaseScore += 1;
+      }
+  
+      update(playerScoreRef, { score: currentFirebaseScore }); // Update Firebase
+  
       const submittedRef = ref(database, `submissions/${player}`);
       update(submittedRef, { submitted: true });
     }
-
-    // Check if this is the last question
+  
     if (currentQuestion >= questions.length - 1) {
       setShowThankYou(true);
-      // Update finishedCount in Firebase
       const finishedCountRef = ref(database, "finishedCount");
       const snapshot = await get(finishedCountRef);
       const currentCount = snapshot.val()?.count || 0;
@@ -72,63 +73,106 @@ export default function Quiz() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center">
       <Container>
-        <h2 className="text-2xl font-bold">Player: {player}</h2>
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.8 }}
+        >
+          <motion.h2 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-2xl font-bold mb-4"
+          >
+            Player: {player}
+          </motion.h2>
+        </motion.div>
 
         {showThankYou ? (
-          <div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <h1 className="text-3xl font-extrabold text-purple-600">
               Thank You for Playing! 🎉
             </h1>
             <p className="text-lg mt-2">Your answers have been submitted.</p>
             <p>Please wait for the results!</p>
-
             <button
               onClick={() => router.push("/")}
               className="mt-6 px-6 py-3 text-lg font-semibold bg-indigo-600 text-white rounded-lg shadow-md transition duration-300"
             >
               🏠 Go Home
             </button>
-          </div>
+          </motion.div>
         ) : (
-          <div>
-            {questions[currentQuestion] &&
-              questions[currentQuestion].image && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            {questions[currentQuestion] && questions[currentQuestion].image && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
                 <ImageQuestion
                   imageSrc={questions[currentQuestion].image}
                   altText={questions[currentQuestion].question}
                 />
-              )}
+              </motion.div>
+            )}
 
             {questions[currentQuestion] && (
               <>
-                <h2 className="text-2xl font-semibold mt-4">
+                <motion.h2 
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="text-2xl font-semibold mt-4"
+                >
                   {questions[currentQuestion].question}
-                </h2>
+                </motion.h2>
 
-                <div className="mt-4 space-y-3">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="mt-4 space-y-3"
+                >
                   {questions[currentQuestion].options.map((option, index) => (
-                    <AnimatedAnswerButton
+                    <Button
                       key={index}
-                      text={option}
                       onClick={() => handleSelectAnswer(option)}
-                      isSelected={selectedAnswer === option}
                       disabled={isSubmitted}
-                      className={
-                        selectedAnswer === option
-                          ? "bg-green-500 text-white border-2 border-green-700"
-                          : "bg-gray-200"
-                      }
-                    />
+                      variant={selectedAnswer === option ? "success" : "primary"}
+                    >
+                      {selectedAnswer === option && (
+                        <span role="img" aria-label="selected" className="mr-2">
+                          ✅
+                        </span>
+                      )}
+                      {option}
+                    </Button>
                   ))}
-                </div>
+                </motion.div>
               </>
             )}
 
             {/* Submit Button - Only show if an answer is selected and not submitted */}
             {!isSubmitted && selectedAnswer && (
-              <SubmitButton onClick={handleSubmit} />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="mt-6"
+              >
+                <SubmitButton onClick={handleSubmit} />
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         )}
       </Container>
     </div>
