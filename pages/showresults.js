@@ -1,3 +1,4 @@
+// pages/showresults.js
 import { useEffect, useState } from "react";
 import { database } from "../firebaseConfig";
 import { ref, onValue, get } from "firebase/database";
@@ -25,7 +26,7 @@ export default function ShowResults() {
     onValue(gameStateRef, (snapshot) => {
       if (snapshot.val() === true) {
         setShowResults(true);
-        fetchScores(); // 🔥 Force-fetch scores when showResults is triggered
+        fetchScores(); // Fetch scores when showResults is triggered
       }
     });
   }, []);
