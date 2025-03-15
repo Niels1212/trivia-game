@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d2ef1a02-49e9-4337-8125-81a46fe3ce9b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/data/questions.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/questions.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/quiz/[player].js" beforeDir="false" afterPath="$PROJECT_DIR$/pages/quiz/[player].js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="2uM3EHcKHjwGuHiTfXjpjP2jg5L" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d2ef1a02-49e9-4337-8125-81a46fe3ce9b" name="Changes" comment="" />
+      <created>1742044504530</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1742044504530</updated>
+    </task>
+    <servers />
+  </component>
+</project>

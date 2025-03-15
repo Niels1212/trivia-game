@@ -13,6 +13,7 @@ export default function GameControls({
   currentQuestion,
   playersFinished,
   totalPlayers,
+  showResultsAvailable
 }) {
   return (
     <Container>
@@ -38,7 +39,7 @@ export default function GameControls({
         <Button
           onClick={showResults}
           variant="primary"
-          disabled={playersFinished !== totalPlayers || totalPlayers === 0}
+          disabled={!showResultsAvailable} // ✅ Now correctly references the prop
         >
           Show Results 🏆
         </Button>

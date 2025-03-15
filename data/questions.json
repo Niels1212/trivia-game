@@ -1,33 +1,167 @@
 [
-    {
-      "question": "Who is the mielest?",
-      "options": ["Miel", "Alex", "Lee", "Cecilia"],
-      "answer": "Miel",
-      "image": "/images/miel.png"
-    },
-    {
-      "question": "Who is the best?",
-      "options": ["Niels", "Miel", "Other Miell", "George"],
-      "answer": "Miel",
-      "image": "/images/miel.png"
-    },
-    {
-      "question": "What is the capital of Japan?",
-      "options": ["Beijing", "Seoul", "Tokyo", "Bangkok"],
-      "answer": "Tokyo",
-      "image": "/images/miel.png"
-    },
-    {
-      "question": "Which planet is known as the Red Planet?",
-      "options": ["Venus", "Mars", "Jupiter", "Saturn"],
-      "answer": "Mars",
-      "image": "/images/miel.png"
-    },
-    {
-      "question": "Who wrote 'To Kill a Mockingbird'?",
-      "options": ["Mark Twain", "Harper Lee", "J.K. Rowling", "Ernest Hemingway"],
-      "answer": "Harper Lee",
-      "image": "/images/miel.png"
-    }
+  {
+      "question": "Where is Alex's hometown?",
+      "options": [
+          "A. Sheffield",
+          "B. Schwenksville",
+          "C. Schnecksville",
+          "D. Shanksville"
+      ],
+      "answer": "C. Schnecksville",
+      "image": "/images/1.png"
+  },
+  {
+      "question": "Which sport did Alex play as a kid?",
+      "options": [
+          "A. Soccer",
+          "B. Field Hockey",
+          "C. Softball",
+          "D. Volleyball"
+      ],
+      "answer": "C. Softball",
+      "image": "/images/2.png"
+  },
+  {
+      "question": "What was Alex's proudest high school moment?",
+      "options": [
+          "A. Being President of the Chorus",
+          "B. Running her own a cappella group",
+          "C. Becoming first chair cellist as a sophomore",
+          "D. Being part of the National Honor Society"
+      ],
+      "answer": "C. Becoming first chair cellist as a sophomore",
+      "image": "/images/3.png"
+  },
+  {
+      "question": "Who was Alex’s freshman year roommate?",
+      "options": [
+          "A. Chelsea",
+          "B. Kailey",
+          "C. Sara",
+          "D. Katie"
+      ],
+      "answer": "A. Chelsea",
+      "image": "/images/4.png"
+  },
+  {
+      "question": "Where did she study abroad?",
+      "options": [
+          "A. Prague",
+          "B. Milan",
+          "C. Rome",
+          "D. Florence"
+      ],
+      "answer": "D. Florence",
+      "image": "/images/5.png"
+  },
+  {
+      "question": "From what show was Alex’s senior year character study?",
+      "options": [
+          "A. Lucia di Lammermoor",
+          "B. La bohème",
+          "C. Manon",
+          "D. La traviata"
+      ],
+      "answer": "C. Manon",
+      "image": "/images/6.png"
+  },
+  {
+      "question": "What show did she have a role in during grad school?",
+      "options": [
+          "A. Luisa Miller",
+          "B. Lakmé",
+          "C. Die Fledermaus",
+          "D. Carmen"
+      ],
+      "answer": "B. Lakmé",
+      "image": "/images/7.png"
+  },
+  {
+      "question": "If Alex had to choose just one thing to read for the rest of her life, what would it be?",
+      "options": [
+          "A. Game of Thrones books",
+          "B. Sarah J. Maas series",
+          "C. Ken Follett’s Kingsbridge series",
+          "D. Dramione fanfiction"
+      ],
+      "answer": "D. Dramione fanfiction",
+      "image": "/images/8.jpg"
+  },
+  {
+      "question": "What was Alex’s favorite place to work?",
+      "options": [
+          "A. Brother Jimmy’s",
+          "B. Bar Americain",
+          "C. Boqueria",
+          "D. Tavern on the Green"
+      ],
+      "answer": "A. Brother Jimmy’s",
+      "image": "/images/9.png"
+  },
+  {
+      "question": "Where did Alex meet Niels?",
+      "options": [
+          "A. At a bar",
+          "B. Mutual friends",
+          "C. Dating app",
+          "D. At work"
+      ],
+      "answer": "D. At work",
+      "image": "/images/10.png"
+  },
+  {
+      "question": "Who is on Alex's phone screen?",
+      "options": [
+          "A. Niels",
+          "B. Kiri",
+          "C. Alex M",
+          "D. Her family"
+      ],
+      "answer": "B. Kiri",
+      "image": "/images/11.png"
+  },
+  {
+      "question": "What was the best day of Alex's life?",
+      "options": [
+          "A. 8-year anniversary with Niels",
+          "B. Meeting Derrick Henry",
+          "C. Her 30th birthday",
+          "D. Master’s recital"
+      ],
+      "answer": "C. Her 30th birthday",
+      "image": "/images/12.png"
+  },
+  {
+      "question": "If Alex could only rewatch one TV series forever, which would it be?",
+      "options": [
+          "A. The Bachelor Franchise",
+          "B. Parks and Rec",
+          "C. The Walking Dead",
+          "D. Fleabag"
+      ],
+      "answer": "C. The Walking Dead",
+      "image": "/images/13.png"
+  },
+  {
+      "question": "What is Alex’s go-to late-night snack?",
+      "options": [
+          "A. Apples and peanut butter",
+          "B. Goldfish",
+          "C. Popcorn and cheese",
+          "D. Ice cream"
+      ],
+      "answer": "C. Popcorn and cheese",
+      "image": "/images/14.png"
+  },
+  {
+      "question": "What is Alex's favorite holiday?",
+      "options": [
+          "A. Thanksgiving",
+          "B. Christmas",
+          "C. 4th of July",
+          "D. Halloween"
+      ],
+      "answer": "D. Halloween",
+      "image": "/images/15.jpg"
+  }
 ]
-  

@@ -13,6 +13,8 @@ export default function MasterControl() {
   const [gameStarted, setGameStarted] = useState(false);
   const [allSubmitted, setAllSubmitted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const showResultsAvailable = playersFinished === totalPlayers && totalPlayers > 0;
+
 
   // Listen for players in waiting room
   useEffect(() => {
@@ -73,15 +75,20 @@ export default function MasterControl() {
   }, []);
 
   // Button actions
-  const resetGame = () => {
-    remove(ref(database, "scores"));
-    remove(ref(database, "waitingRoom"));
-    remove(ref(database, "finishedCount"));
-    remove(ref(database, "submissions"));
-    update(ref(database, "gameState"), { started: false, showResults: false });
-    update(ref(database, "currentQuestion"), { value: 0 });
+  const resetGame = async () => {
+    await remove(ref(database, "scores"));       // ✅ Remove all scores
+    await remove(ref(database, "waitingRoom"));  // ✅ Remove waiting room players
+    await remove(ref(database, "players"));      // ✅ Remove players stored separately
+    await remove(ref(database, "finishedCount"));// ✅ Remove finished count
+    await remove(ref(database, "submissions"));  // ✅ Remove submissions
+    
+    await update(ref(database, "gameState"), { started: false, showResults: false });
+    await update(ref(database, "currentQuestion"), { value: 0 });
+  
+    // Reset local state
     setGameStarted(false);
     setTotalPlayers(0);
+    setPlayersFinished(0);
   };
 
   const startGame = () => {
@@ -120,6 +127,8 @@ export default function MasterControl() {
         currentQuestion={currentQuestion}
         playersFinished={playersFinished}
         totalPlayers={totalPlayers}
+        showResultsAvailable={showResultsAvailable} // ✅ Pass this
+
       />
 
       <PlayersList players={players} />
